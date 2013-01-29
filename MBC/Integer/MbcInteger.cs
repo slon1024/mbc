@@ -5,20 +5,34 @@ namespace MBC.Integer
 {
     public partial class MbcInteger : MbcUInteger
     {
+        /// <summary>
+        /// Sign: positive and negative.
+        /// </summary>
         public enum SignValue
         {
-            Negative,
-            Positive
+            Positive,
+            Negative
         }
 
+        /// <summary>
+        /// Sign of the number.
+        /// Default is positive.
+        /// </summary>
         private SignValue _sign = SignValue.Positive;
 
+        /// <summary>
+        /// Sign
+        /// </summary>
+        /// <see cref="_sign"/>
         public SignValue Sign
         {
             get { return _sign; }
             set { _sign = value; }
         }
 
+        /// <summary>
+        /// Set as a negative sign
+        /// </summary>
         public void SetNegative()
         {
             _sign = SignValue.Negative;
@@ -64,16 +78,28 @@ namespace MBC.Integer
 
         #endregion Constructors
 
+        /// <summary>
+        /// Is positive number?
+        /// </summary>
+        /// <see cref="SignValue"/>
         public bool IsPositive
         {
             get { return SignValue.Positive == Sign; }
         }
 
+        /// <summary>
+        /// Is negative number?
+        /// </summary>
+        /// <see cref="SignValue"/>
         public bool IsNegative
         {
             get { return SignValue.Negative == Sign; }
         }
 
+        /// <summary>
+        /// Cast the result as a string
+        /// </summary>
+        /// <returns>string</returns>
         public override string ToString()
         {
             var result = base.ToString();
@@ -83,10 +109,12 @@ namespace MBC.Integer
             return "-" + result;
         }
 
+        /// <summary>
+        /// Cast to MbcUInteger
+        /// </summary>
+        /// <returns>MbcUInteger</returns>
         public MbcUInteger ToMbcUInteger()
         {
-            //TODO optimalize: return (MbcUInteger) this;
-
             var number = ToString();
             return new MbcUInteger('-' == number[0] ? number.Substring(1) : number);
         }

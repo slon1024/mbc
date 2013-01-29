@@ -5,43 +5,18 @@ using System.Diagnostics;
 namespace MBC.UInteger
 {
     /// <summary>
-    /// Is like classical type uint, with one difference being that there are no restrictions in top border.
-    /// This means that the count from zero to plus infinity.
+    /// Implementation of multiplication, division and modulo operators for MbcUInteger.
     /// </summary>
     public partial class MbcUInteger
     {
         /// <summary>
-        /// Returns the result of the multiplication of two numbers.
-        /// Implementation of the calculation is in the method CalcuateMultiplication.
+        /// Multiplication operator.
         /// </summary>
-        /// <see cref="CalcuateMultiplication"/>
-        /// <param name="first">first number</param>
-        /// <param name="second">second number</param>
-        /// <returns>result of the multiplication of two numbers</returns>
-        public static MbcUInteger operator *(MbcUInteger first, MbcUInteger second)
-        {
-            return CalcuateMultiplication(first, second);
-        }
-
-        /// <summary>
-        /// Returns the result of the multiplication of two numbers (MbcUInteger times uint).
-        /// </summary>
-        /// <param name="a">first number, type MbcUInteger</param>
-        /// <param name="b">second number, type uint</param>
-        /// <returns>result of the multiplication of two numbers</returns>
-        public static MbcUInteger operator *(MbcUInteger a, uint b)
-        {
-            return CalcuateMultiplication(a, new MbcUInteger(b));
-        }
-
-        public static MbcUInteger operator *(uint a, MbcUInteger b)
-        {
-            return CalcuateMultiplication(new MbcUInteger(a), b);
-        }
-
-        #region CalcuateMultiplication
-
-        protected static MbcUInteger CalcuateMultiplication(MbcUInteger a, MbcUInteger b)
+        /// <see cref="MbcUInteger.CalcuateMultiplication"/>
+        /// <param name="a">MbcUInteger - first number</param>
+        /// <param name="b">uint - second number</param>
+        /// <returns>MbcUInteger</returns>
+        public static MbcUInteger operator *(MbcUInteger a, MbcUInteger b)
         {
             if (1 == a.Length)
             {
@@ -61,9 +36,58 @@ namespace MBC.UInteger
                     return new MbcUInteger(a);
             }
 
-            bool aIsLessB = (a.Length < b.Length);
-            var greaterNumber = (aIsLessB) ? b.ToString() : a.ToString();
-            var equalOrLessNumber = (aIsLessB) ? a.ToString() : b.ToString();
+            return CalcuateMultiplication(a, b);
+        }
+
+        /// <summary>
+        /// Multiplication operator.
+        /// First argument is uint.
+        /// </summary>
+        /// <see cref="MbcUInteger.CalcuateMultiplication"/>
+        /// <param name="a">MbcUInteger - first number</param>
+        /// <param name="b">uint - second number</param>
+        /// <returns>MbcUInteger</returns>
+        public static MbcUInteger operator *(uint a, MbcUInteger b)
+        {
+            return new MbcUInteger(a)*b;
+        }
+
+        /// <summary>
+        /// Multiplication operator.
+        /// Second argument is uint.
+        /// </summary>
+        /// <see cref="MbcUInteger.CalcuateMultiplication"/>
+        /// <param name="a">MbcUInteger - first number</param>
+        /// <param name="b">uint - second number</param>
+        /// <returns>MbcUInteger</returns>
+        public static MbcUInteger operator *(MbcUInteger a, uint b)
+        {
+            return a*new MbcUInteger(b);
+        }
+        #region CalcuateMultiplication
+
+        /// <summary>
+        /// Implementation of multiplication 
+        /// 
+        /// Long multiplication
+        ///     123
+        ///    x 99
+        ///     ---
+        ///    1107
+        ///   1107
+        ///  ------
+        ///   12177
+        /// 
+        /// </summary>
+        /// <param name="a">MbcUInteger - first number</param>
+        /// <param name="b">MbcUInteger - second number</param>
+        /// <returns>MbcUInteger</returns>
+        protected static MbcUInteger CalcuateMultiplication(MbcUInteger a, MbcUInteger b)
+        {
+            var greaterNumber = a.ToString();
+            var equalOrLessNumber = b.ToString();
+            if (greaterNumber.Length < equalOrLessNumber.Length)
+                Swap(ref greaterNumber, ref equalOrLessNumber);
 
             //allocate memory
             var result = new int[equalOrLessNumber.Length, greaterNumber.Length + 1];
@@ -78,7 +102,6 @@ namespace MBC.UInteger
                     Carry(ref value, ref buffer);
                     result[equalOrLessNumber.Length - 1 - outerIndex, innerIndex + 1] = value;
                 }
-
                 if (buffer <= 0) continue;
 
                 result[equalOrLessNumber.Length - 1 - outerIndex, 0] = buffer;
@@ -95,10 +118,8 @@ namespace MBC.UInteger
                     int index = outerIndex + innerIndex;
                     if (index > greaterNumber.Length)
                         break;
-
                     value += result[innerIndex, index];
                 }
-
                 Carry(ref value, ref buffer);
                 output[output.Length - 1 - (greaterNumber.Length - outerIndex)] = value;
             }
@@ -119,14 +140,14 @@ namespace MBC.UInteger
 
         #endregion CalcuateMultiplication
 
+        /// <summary>
+        /// Division operator
+        /// </summary>
+        /// <param name="a">MbcUInteger - first number</param>
+        /// <param name="b">MbcUInteger - second number</param>
+        /// <returns>MbcUInteger</returns>
         public static MbcUInteger operator /(MbcUInteger a, MbcUInteger b)
         {
-            return CalcuateDivision(a, b);
-        }
-
-        protected static MbcUInteger CalcuateDivision(MbcUInteger a, MbcUInteger b)
-        {
-            //border cases
             if (1 == b.Length)
             {
                 if ("0" == b.ToString())
@@ -135,34 +156,50 @@ namespace MBC.UInteger
                 if ("1" == b.ToString())
                     return new MbcUInteger(a);
             }
-
             if (a == b)
                 return new MbcUInteger("1");
+
+            return CalcuateDivision(a, b);
+        }
+
+        /// <summary>
+        /// Implementation division
+        /// </summary>
+        /// <see 
+        /// <param name="a">MbcUInteger - first number</param>
+        /// <param name="b">MbcUInteger - second number</param>
+        /// <returns>MbcUInteger</returns>
+        protected static MbcUInteger CalcuateDivision(MbcUInteger a, MbcUInteger b)
+        {
 
             if ((1 == a.Length && "0" == a.ToString()) || a < b)
                 return new MbcUInteger("0");
 
-            //real cases
-            return Div(a, b);
+            var dividend = a.ToString();
+            var divider = b.ToString();
+            var result = new List<uint>();
+
+            var current = dividend.Substring(0, divider.Length);
+            var lastIndex = current.Length;
+
+            while (true)
+            {
+                uint quotient;
+                string rest;
+
+                DevPart(current, divider, out quotient, out rest);
+                result.Add(quotient);
+                if (false == lastIndex < dividend.Length)
+                    break;
+                current = rest + dividend[lastIndex++];
+            }
+
+            return new MbcUInteger(result);
         }
 
-        private static string GetFirstNumber(string dividend, string divider)
-        {
-            Debug.Assert(
-                false == String.IsNullOrEmpty(dividend),
-                "Dividend is empty or null",
-                "The dividend can't be empty or null. This case should have been caught by the above conditions and should not reach the performance of this line"
-            );
-
-            Debug.Assert(
-                false == String.IsNullOrEmpty(divider),
-                "Divider is empty or null",
-                "The divider can't be empty or null. This case should have been caught by the above conditions and should not reach the performance of this line"
-            );
-
-            return dividend.Substring(0, divider.Length);
-        }
-
+        /// <summary>
+        /// Performs a one step of division
+        /// </summary>
         private static void DevPart(string strDividend, string strDivider, out uint quotient, out string rest)
         {
             quotient = 0;
@@ -188,38 +225,20 @@ namespace MBC.UInteger
                     if (result > dividend)
                     {
                         quotient = i - 1;
-                        var res = (dividend - (divider * quotient));
-                        rest = (null == res) ? "" : res.ToString();
+                        rest = (dividend - (divider * quotient)).ToString();
                         break;
                     }
                 }
             }
         }
 
-        private static MbcUInteger Div(MbcUInteger a, MbcUInteger b)
-        {
-            var dividend = a.ToString();
-            var divider = b.ToString();
-            var result = new List<uint>();
-
-            var current = GetFirstNumber(dividend, divider);
-            var lastIndex = current.Length;
-
-            while (true)
-            {
-                uint quotient;
-                string rest;
-
-                DevPart(current, divider, out quotient, out rest);
-                result.Add(quotient);
-                if (false == lastIndex < dividend.Length)
-                    break;
-                current = rest + dividend[lastIndex++];
-            }
-
-            return new MbcUInteger(result);
-        }
-
+        
+        /// <summary>
+        /// Modulo operator
+        /// </summary>
+        /// <param name="a">MbcUInteger - first number</param>
+        /// <param name="b">MbcUInteger - second number</param>
+        /// <returns>MbcUInteger</returns>
         public static MbcUInteger operator %(MbcUInteger a, MbcUInteger b)
         {
             if (1 == b.Length)
@@ -241,6 +260,12 @@ namespace MBC.UInteger
             return CalcuateModulo(a, b);
         }
 
+        /// <summary>
+        /// Implementation modulo
+        /// </summary>
+        /// <param name="a">MbcUInteger - first number</param>
+        /// <param name="b">MbcUInteger - second number</param>
+        /// <returns>MbcUInteger</returns>
         protected static MbcUInteger CalcuateModulo(MbcUInteger a, MbcUInteger b)
         {
             var quotient = a / b;

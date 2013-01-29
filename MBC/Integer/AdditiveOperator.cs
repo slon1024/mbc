@@ -1,17 +1,40 @@
 ﻿namespace MBC.Integer
 {
+    /// <summary>
+    /// Implementation of addition and subtraction operators for MbcInteger
+    /// </summary>
     public partial class MbcInteger
     {
+        /// <summary>
+        /// Addition operator
+        /// </summary>
+        /// <see cref="MbcInteger.CalcuateAddition"/>
+        /// <param name="a">MbcInteger - first number</param>
+        /// <param name="b">MbcInteger - second number</param>
+        /// <returns>MbcInteger</returns>
         public static MbcInteger operator +(MbcInteger a, MbcInteger b)
         {
             return CalcuateAddition(a, b);
         }
 
+        /// <summary>
+        /// Subtraction operator
+        /// </summary>
+        /// <see cref="MbcInteger.CalcuateSubtraction"/>
+        /// <param name="a">MbcInteger - first number</param>
+        /// <param name="b">MbcInteger - second number</param>
+        /// <returns>MbcInteger</returns>
         public static MbcInteger operator -(MbcInteger first, MbcInteger second)
         {
             return CalcuateSubtraction(first, second);
         }
 
+        /// <summary>
+        /// Implementation of the addition of numbers
+        /// </summary>
+        /// <param name="a">MbcInteger - first number</param>
+        /// <param name="b">MbcInteger - second number</param>
+        /// <returns>MbcInteger</returns>
         protected static MbcInteger CalcuateAddition(MbcInteger a, MbcInteger b)
         {
             var first = a.ToMbcUInteger();
@@ -31,6 +54,12 @@
             return new MbcInteger(CalcuateSubtraction(first, second)) { _sign = sign };
         }
 
+        /// <summary>
+        /// Implementation of the subtraction of numbers
+        /// </summary>
+        /// <param name="a">MbcInteger - first number</param>
+        /// <param name="b">MbcInteger - second number</param>
+        /// <returns>MbcInteger</returns>
         protected static MbcInteger CalcuateSubtraction(MbcInteger a, MbcInteger b)
         {
             var first = a.ToMbcUInteger();

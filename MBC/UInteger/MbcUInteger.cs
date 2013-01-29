@@ -6,13 +6,17 @@ using System.Text.RegularExpressions;
 
 namespace MBC.UInteger
 {
+    /// <summary>
+    /// Is like classical type uint, with one difference being that there are no restrictions in top border.
+    /// This means that the count from zero to plus infinity.
+    /// </summary>
     public partial class MbcUInteger
     {
         protected readonly List<uint> _integer = new List<uint>();
         private uint _length = 0;
         private readonly byte _lengthUInt = (byte)Math.Log10(uint.MaxValue);
         protected const char _firstChar = '1';
-        protected bool _isFraction = false;
+        protected bool _isFraction;
 
         public uint Length
         {
@@ -97,6 +101,10 @@ namespace MBC.UInteger
             _length += (uint)value.Length;
         }
 
+        /// <summary>
+        /// Convert to strings
+        /// </summary>
+        /// <returns>string</returns>
         public override string ToString()
         {
             var str = new StringBuilder();
@@ -105,9 +113,14 @@ namespace MBC.UInteger
             return str.ToString();
         }
 
+        /// <summary>
+        /// Convert char to int
+        /// </summary>
+        /// <param name="value">char - value</param>
+        /// <returns>int</returns>
         protected static int GetIntFromChar(char value)
         {
-            return Convert.ToInt32(Convert.ToString(value));
+            return int.Parse(value.ToString());
         }
 
         private static int PrepareDigitValue(int value, ref int buffer)
@@ -129,6 +142,11 @@ namespace MBC.UInteger
             return value;
         }
 
+        /// <summary>
+        /// Carry to the buffer overflow number
+        /// </summary>
+        /// <param name="value">int - value</param>
+        /// <param name="buffer">int - buffer</param>
         private static void Carry(ref int value, ref int buffer)
         {
             value += buffer;
@@ -141,11 +159,28 @@ namespace MBC.UInteger
             }
         }
 
+        /// <summary>
+        /// Swap
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="first">first value</param>
+        /// <param name="second">second value</param>
         protected static void Swap<T>(ref T first, ref T second)
         {
             T temp = first;
             first = second;
             second = temp;
+        }
+
+        /// <summary>
+        /// Wrap to allocate memory
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="size">size</param>
+        /// <returns>T[]</returns>
+        protected static T[] AllocateMemory<T>(int size)
+        {
+            return new T[size];
         }
     }
 }
